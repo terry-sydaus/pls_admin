@@ -101,6 +101,8 @@ def wallets_review():
     # get all wallets
     pls_wallets_list = pls_wallets.query.all()
     price_usd, price_fx = get_price(PLS_PRICE_URI, PLS_PRICE_API_KEY, PLS_PRICE_FX)
+    pls_price.store_new_price(price_usd, price_fx)
+    print("hello there wallets review def")
     for wallet in pls_wallets_list:
         wallet_data_uri = f'https://scan.pulsechain.com/api?module=account&action=balance&address={wallet.address}'
         wallet_data = requests.get(wallet_data_uri)
@@ -113,15 +115,15 @@ def wallets_review():
                 if float(current_balance) != previous_balance:
                     if float(current_balance) > previous_balance:
                         balance_increase = float(current_balance) - previous_balance
-                        if balance_increase < 32000000:
+                        if (balance_increase) < 32e+24:
                             #increase in balance from validator rewards and/or fee recipient tips/rewards
                             taxableIncome_USD = balance_increase * price_usd
                             taxableIncome_FX = balance_increase * price_fx
                         else:
                             #increase in balance caused by exiting validator/s with or without validator
                             #rewards and/or fee recipient tips/rewards
-                            taxableIncome_USD = (balance_increase % 32000000) * price_usd
-                            taxableIncome_FX = (balance_increase % 32000000) * price_fx
+                            taxableIncome_USD = (balance_increase % 32e+24) * price_usd
+                            taxableIncome_FX = (balance_increase % 32e+24) * price_fx
                     else:
                         taxableIncome_USD = 0
                         taxableIncome_FX = 0
@@ -275,7 +277,7 @@ def pls_custom_sync(xfrom, xto):
 # ###############################################################################
 # ###############################################################################
 
-schedule.every(10).minutes.do(pls_price_update)
-schedule.every(6).minutes.do(wallets_review)
+schedule.every(720).minutes.do(pls_price_update)
+schedule.every(15).minutes.do(wallets_review)
 schedule.every().hour.at(":15").do(validator_update)
 schedule.every().hour.at(":45").do(validator_update)
