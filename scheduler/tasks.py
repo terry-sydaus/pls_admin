@@ -112,22 +112,22 @@ def wallets_review():
                 # save new value for history purposes
                 current_balance = wallet_info['result']
                 previous_balance = pls_wallets.get_balance(wallet.address)
+                balance_change = float(current_balance) - previous_balance
                 if float(current_balance) != previous_balance:
                     if float(current_balance) > previous_balance:
-                        balance_increase = float(current_balance) - previous_balance
-                        if (balance_increase) < 32e+24:
+                        if (balance_change) < 32e+24:
                             #increase in balance from validator rewards and/or fee recipient tips/rewards
-                            taxableIncome_USD = balance_increase * price_usd
-                            taxableIncome_FX = balance_increase * price_fx
+                            taxableIncome_USD = balance_change * price_usd
+                            taxableIncome_FX = balance_change * price_fx
                         else:
                             #increase in balance caused by exiting validator/s with or without validator
                             #rewards and/or fee recipient tips/rewards
-                            taxableIncome_USD = (balance_increase % 32e+24) * price_usd
-                            taxableIncome_FX = (balance_increase % 32e+24) * price_fx
+                            taxableIncome_USD = (balance_change % 32e+24) * price_usd
+                            taxableIncome_FX = (balance_change % 32e+24) * price_fx
                     else:
                         taxableIncome_USD = 0
                         taxableIncome_FX = 0
-                    pls_wallet_history.new_balance(wallet.address, current_balance, price_usd, price_fx, taxableIncome_USD, taxableIncome_FX)
+                    pls_wallet_history.new_balance(wallet.address, current_balance, price_usd, price_fx, taxableIncome_USD, taxableIncome_FX, balance_change)
                     # update wallet balance
                     pls_wallets.update_balance(wallet.address, current_balance)
                     log2store = f'Wallet {wallet.address} updated with balance {current_balance}'

@@ -391,8 +391,9 @@ class pls_wallet_history(db.Model):
     priceFX = db.Column('priceFX', db.Float, nullable = False)
     taxableIncomeUSD = db.Column('taxableIncomeUSD', db.Float, nullable = False)
     taxableIncomeFX = db.Column('taxableIncomeFX', db.Float, nullable = False)
+    balanceChange= db.Column('balanceChange', db.Float, nullable = False)
     
-    def __init__(self, address, balance, date, priceUSD, priceFX, taxableIncomeUSD, taxableIncomeFX):
+    def __init__(self, address, balance, date, priceUSD, priceFX, taxableIncomeUSD, taxableIncomeFX, balanceChange):
         self.address = address
         self.balance = balance
         self.date = date
@@ -400,16 +401,17 @@ class pls_wallet_history(db.Model):
         self.priceFX = priceFX
         self.taxableIncomeUSD = taxableIncomeUSD
         self.taxableIncomeFX = taxableIncomeFX
+        self.balanceChange = balanceChange
     
     def __repr__(self):
-        return f'{self.address} - {self.balance} - {self.date} - {self.priceUSD} - {self.priceFX} - {self.taxableIncomeUSD}- {self.taxableIncomeFX}'
+        return f'{self.address} - {self.balance} - {self.date} - {self.priceUSD} - {self.priceFX} - {self.taxableIncomeUSD}- {self.taxableIncomeFX} - {self.balanceChange}'
     
     @staticmethod
     def get_all():
         return pls_wallet_history.query.all()
     
     @staticmethod
-    def new_balance(address, balance, price_usd, price_fx, taxableIncome_usd, taxableIncome_fx):
+    def new_balance(address, balance, price_usd, price_fx, taxableIncome_usd, taxableIncome_fx, balance_change):
         my_balance = pls_wallet_history(
             address = address,
             balance = balance,
@@ -417,7 +419,8 @@ class pls_wallet_history(db.Model):
             priceUSD = price_usd,
             priceFX = price_fx,
             taxableIncomeUSD = taxableIncome_usd,
-            taxableIncomeFX = taxableIncome_fx
+            taxableIncomeFX = taxableIncome_fx,
+            balanceChange = balance_change
         )
         db.session.add(my_balance)
         db.session.commit()
