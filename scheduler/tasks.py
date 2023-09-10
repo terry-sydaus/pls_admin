@@ -95,6 +95,7 @@ def pls_price_update():
 
 # Updates Wallets data
 def wallets_review():
+    headers = {'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/116.0'}
     log2store = 'Wallets Update - Start'
     prYellow(f'{get_time()} | SCHEDULER ====================>>> {log2store}')
     new_log(users_id=1, module='PLS_WALLET', severity=SEV_INF, description=log2store, data=log2store, image=None)
@@ -105,7 +106,7 @@ def wallets_review():
     print("hello there wallets review def")
     for wallet in pls_wallets_list:
         wallet_data_uri = f'https://scan.pulsechain.com/api?module=account&action=balance&address={wallet.address}'
-        wallet_data = requests.get(wallet_data_uri)
+        wallet_data = requests.get(wallet_data_uri, headers=headers)
         if wallet_data.status_code == 200:
             wallet_info = wallet_data.json()
             if wallet_info['status'] == '1':
