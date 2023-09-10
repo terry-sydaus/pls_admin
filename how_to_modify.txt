@@ -1,0 +1,8 @@
+1. Run "sudo docker compose down"
+2. Run "sudo docker ps" to check docker container running.
+3. No docker container should be running.
+4. Run "sudo docker images" to see which images are installed.
+5. Note the image hash and then run "sudo docker rmi xxx", where xxx is the image id.
+6. Run "sudo docker container prune"
+7. Run "sudo docker compose up -d"
+8. Run "sudo docker exec -it adminpls python3 -m flask scheduler"
