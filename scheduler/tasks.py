@@ -42,11 +42,14 @@ def get_price(uri, api_key, fx_param):
     headers = {'X-CMC_PRO_API_KEY': api_key}
     #parameters = {'convert': 'AUD'}
     parameters = {'convert': fx_param}
+    dexscreener_uri = "https://api.dexscreener.com/latest/dex/pairs/pulsechain/0xE56043671df55dE5CDf8459710433C10324DE0aE"
     try:
         response1 = requests.get(uri, headers=headers)
         response2 = requests.get(uri, headers=headers, params=parameters)
+        response3 = requests.get(dexscreener_uri)
         data1 = json.loads(response1.text)
         data2 = json.loads(response2.text)
+        data3 = json.loads(response3.text)
     except Exception as e:
         log2store = f"{get_time()} | Error getting data from price API: {str(e)}"
         prRed(f'{get_time()} | {log2store}')
@@ -54,8 +57,14 @@ def get_price(uri, api_key, fx_param):
         price_fx = pls_price.get_last().priceFX
         return price_usd, price_fx
     try:
-        price_usd = float(data1['data']['11145']['quote']['USD']['price'])
-        price_fx = float(data2['data']['11145']['quote'][fx_param]['price'])
+        price_usd_cmc = float(data1['data']['11145']['quote']['USD']['price'])
+        price_fx_cmc = float(data2['data']['11145']['quote'][fx_param]['price'])
+        #use coinmarketcap to infer fx rate from two prices
+        fx_rate_cmc = price_fx_cmc / price_usd_cmc
+        #obtain PLS price for dexscreener as more accurate than coinmarketcap
+        price_usd = float(data3['pairs'][0]['priceUsd'])
+        #use dexscreener PLS price and coinmarketcap inferred fx rate to calculate fx price
+        price_fx = price_usd * fx_rate_cmc
     except Exception as e:
         log2store = f"{get_time()} | Error getting price from API: {str(e)}"
         prRed(f'{get_time()} | {log2store}')
@@ -105,7 +114,7 @@ def wallets_review():
     pls_price.store_new_price(price_usd, price_fx)
     print("hello there wallets review def")
     for wallet in pls_wallets_list:
-        wallet_data_uri = f'https://scan.pulsechain.com/api?module=account&action=balance&address={wallet.address}'
+        wallet_data_uri = f'https://api.scan.pulsechain.com/api?module=account&action=balance&address={wallet.address}'
         wallet_data = requests.get(wallet_data_uri, headers=headers)
         if wallet_data.status_code == 200:
             wallet_info = wallet_data.json()
