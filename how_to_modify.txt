@@ -6,3 +6,8 @@
 6. Run "sudo docker container prune"
 7. Run "sudo docker compose up -d"
 8. Run "sudo docker exec -it adminpls python3 -m flask scheduler"
+
+
+Note: also need to add the following to the crontab of the machine running the scheduler.
+*/7 * * * * /home/terry/pls_admin/pls_admin_sched_check.sh
+
