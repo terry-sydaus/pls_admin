@@ -1,0 +1,3393 @@
+{
+  "__inputs": [
+    {
+      "name": "DS_POSTGRESQL",
+      "label": "PostgreSQL",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "postgres",
+      "pluginName": "PostgreSQL"
+    },
+    {
+      "name": "DS_EXPRESSION",
+      "label": "Expression",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "__expr__"
+    },
+    {
+      "name": "DS_PROMETHEUS",
+      "label": "Prometheus",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "prometheus",
+      "pluginName": "Prometheus"
+    },
+    {
+      "name": "VAR_PLS_PRECISION",
+      "type": "constant",
+      "label": "pls_precision",
+      "value": "1E-9",
+      "description": ""
+    },
+    {
+      "name": "VAR_MY_TIMEZONE",
+      "type": "constant",
+      "label": "my_timezone",
+      "value": "Australia/Sydney",
+      "description": ""
+    }
+  ],
+  "__elements": {
+    "d92eb8cc-386b-4665-92b9-fcce7370c29c": {
+      "name": "Taxable Income (AUD) ",
+      "uid": "d92eb8cc-386b-4665-92b9-fcce7370c29c",
+      "kind": 1,
+      "model": {
+        "datasource": {
+          "type": "postgres",
+          "uid": "d72bf812-9b5c-474c-870d-4669312a36dc"
+        },
+        "description": "As of around 1/2/24, I changed the source of the PLS price from CoinMarketCap to Descreener. At that time the taxable income for the fy ending 30/6/24 was around $19K. Since CMC's PLS price was on average 10% higher up until 1/2/24, I will reduce the taxable income amount by $1.9K for the fy year ending 30/6/24, to take into account the overpriced PLS at the time it was received from 1/7/23 to 30/6/24.",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "decimals": 2,
+            "mappings": [
+              {
+                "options": {
+                  "10000": {
+                    "color": "orange",
+                    "index": 0,
+                    "text": "Time to sell some PLS"
+                  }
+                },
+                "type": "value"
+              }
+            ],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "yellow",
+                  "value": 3000
+                },
+                {
+                  "color": "orange",
+                  "value": 5000
+                },
+                {
+                  "color": "super-light-red",
+                  "value": 10000
+                },
+                {
+                  "color": "light-red",
+                  "value": 15000
+                },
+                {
+                  "color": "red",
+                  "value": 20000
+                },
+                {
+                  "color": "semi-dark-red",
+                  "value": 25000
+                },
+                {
+                  "color": "dark-red",
+                  "value": 30000
+                }
+              ]
+            },
+            "unit": "locale"
+          },
+          "overrides": [
+            {
+              "matcher": {
+                "id": "byFrameRefID",
+                "options": "A"
+              },
+              "properties": [
+                {
+                  "id": "displayName",
+                  "value": "1/7/22 to 30/6/23"
+                },
+                {
+                  "id": "unit",
+                  "value": "currencyUSD"
+                },
+                {
+                  "id": "decimals",
+                  "value": 5
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byFrameRefID",
+                "options": "B"
+              },
+              "properties": [
+                {
+                  "id": "displayName",
+                  "value": "1/7/23 to 30/6/24"
+                },
+                {
+                  "id": "unit",
+                  "value": "currencyUSD"
+                },
+                {
+                  "id": "decimals",
+                  "value": 5
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byFrameRefID",
+                "options": "C"
+              },
+              "properties": [
+                {
+                  "id": "displayName",
+                  "value": "1/7/24 to 30/6/25"
+                },
+                {
+                  "id": "unit",
+                  "value": "currencyUSD"
+                },
+                {
+                  "id": "decimals",
+                  "value": 5
+                }
+              ]
+            }
+          ]
+        },
+        "options": {
+          "colorMode": "value",
+          "graphMode": "area",
+          "justifyMode": "auto",
+          "orientation": "auto",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "text": {},
+          "textMode": "auto"
+        },
+        "pluginVersion": "9.5.2",
+        "targets": [
+          {
+            "datasource": {
+              "type": "postgres",
+              "uid": "d72bf812-9b5c-474c-870d-4669312a36dc"
+            },
+            "editorMode": "code",
+            "format": "table",
+            "rawQuery": true,
+            "rawSql": "SELECT SUM(\"taxableIncomeFX\") * 1e-18 FROM pls_wallet_history\r\nwhere date >= '2022-07-01' and date <= '2023-06-30'",
+            "refId": "A",
+            "sql": {
+              "columns": [
+                {
+                  "name": "SUM",
+                  "parameters": [
+                    {
+                      "name": "\"taxableIncomeFX\"",
+                      "type": "functionParameter"
+                    }
+                  ],
+                  "type": "function"
+                }
+              ],
+              "groupBy": [
+                {
+                  "property": {
+                    "type": "string"
+                  },
+                  "type": "groupBy"
+                }
+              ],
+              "limit": 50
+            },
+            "table": "pls_wallet_history"
+          },
+          {
+            "datasource": {
+              "type": "postgres",
+              "uid": "d72bf812-9b5c-474c-870d-4669312a36dc"
+            },
+            "editorMode": "code",
+            "format": "table",
+            "hide": false,
+            "rawQuery": true,
+            "rawSql": "SELECT SUM(\"taxableIncomeFX\") * 1e-18 FROM pls_wallet_history\r\nwhere date >= '2023-07-01' and date <= '2024-06-30'",
+            "refId": "B",
+            "sql": {
+              "columns": [
+                {
+                  "name": "SUM",
+                  "parameters": [
+                    {
+                      "name": "\"taxableIncomeFX\"",
+                      "type": "functionParameter"
+                    }
+                  ],
+                  "type": "function"
+                }
+              ],
+              "groupBy": [
+                {
+                  "property": {
+                    "type": "string"
+                  },
+                  "type": "groupBy"
+                }
+              ],
+              "limit": 50
+            },
+            "table": "pls_wallet_history"
+          },
+          {
+            "datasource": {
+              "type": "postgres",
+              "uid": "d72bf812-9b5c-474c-870d-4669312a36dc"
+            },
+            "editorMode": "code",
+            "format": "table",
+            "hide": false,
+            "rawQuery": true,
+            "rawSql": "SELECT SUM(\"taxableIncomeFX\") * 1e-18 FROM pls_wallet_history\r\nwhere date >= '2024-07-01' and date <= '2025-06-30'",
+            "refId": "C",
+            "sql": {
+              "columns": [
+                {
+                  "name": "SUM",
+                  "parameters": [
+                    {
+                      "name": "\"taxableIncomeFX\"",
+                      "type": "functionParameter"
+                    }
+                  ],
+                  "type": "function"
+                }
+              ],
+              "groupBy": [
+                {
+                  "property": {
+                    "type": "string"
+                  },
+                  "type": "groupBy"
+                }
+              ],
+              "limit": 50
+            },
+            "table": "pls_wallet_history"
+          }
+        ],
+        "title": "Taxable Income (AUD) ",
+        "type": "stat"
+      }
+    }
+  },
+  "__requires": [
+    {
+      "type": "datasource",
+      "id": "__expr__",
+      "version": "1.0.0"
+    },
+    {
+      "type": "panel",
+      "id": "barchart",
+      "name": "Bar chart",
+      "version": ""
+    },
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "9.5.2"
+    },
+    {
+      "type": "datasource",
+      "id": "postgres",
+      "name": "PostgreSQL",
+      "version": "1.0.0"
+    },
+    {
+      "type": "datasource",
+      "id": "prometheus",
+      "name": "Prometheus",
+      "version": "1.0.0"
+    },
+    {
+      "type": "panel",
+      "id": "stat",
+      "name": "Stat",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "table",
+      "name": "Table",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "timeseries",
+      "name": "Time series",
+      "version": ""
+    }
+  ],
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 23,
+      "panels": [],
+      "title": "Taxable Income & Capital Gain/Loss",
+      "type": "row"
+    },
+    {
+      "gridPos": {
+        "h": 4,
+        "w": 7,
+        "x": 0,
+        "y": 1
+      },
+      "id": 20,
+      "libraryPanel": {
+        "uid": "d92eb8cc-386b-4665-92b9-fcce7370c29c",
+        "name": "Taxable Income (AUD) "
+      }
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "${DS_POSTGRESQL}"
+      },
+      "description": "In order for these values to change, my PLS rewards need to be sold. I record a sale of a specific tranche of PLS by opening the pls_wallet_history table in pgAdmin and adding a date (date_sold field) and price (pricefx_sold) values to the record that holds the amount of PLS that I am selling. Doing this will then enable the query in this panel to calculate the capital gain/loss.\nIf this panel is blank, it means that no PLS have been sold from the PLS rewards received from validating.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 2,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1800
+              }
+            ]
+          },
+          "unit": "locale"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "A"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "1/7/22 to 30/6/23"
+              },
+              {
+                "id": "unit",
+                "value": "currencyUSD"
+              },
+              {
+                "id": "decimals",
+                "value": 5
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "B"
+            },
+            "properties": [
+              {
+                "id": "decimals",
+                "value": 5
+              },
+              {
+                "id": "unit",
+                "value": "currencyUSD"
+              },
+              {
+                "id": "displayName",
+                "value": "1/7/23 to 30/6/24"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 7,
+        "x": 7,
+        "y": 1
+      },
+      "id": 24,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "vertical",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "9.5.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "${DS_POSTGRESQL}"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "select sum(case \r\n\t\t   when (\"pricefx_sold\" - \"priceFX\") < 0 \r\n\t\t   then (\"pricefx_sold\" - \"priceFX\") * \"taxableIncomeFX\" / \"priceFX\"\r\n\t\t   when extract(day from \"date_sold\" - \"date\") > 365 \r\n\t\t   then (\"pricefx_sold\" - \"priceFX\") * \"taxableIncomeFX\" / \"priceFX\" * 0.5\r\n\t\t   else (\"pricefx_sold\" - \"priceFX\") * \"taxableIncomeFX\" / \"priceFX\"\r\n\t\t   end) * 1e-18\r\n\t\t   as cap_gain_loss from pls_wallet_history\r\n       where date_sold >= '2022-07-01' and date_sold <= '2023-06-30'",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        },
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "${DS_POSTGRESQL}"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "select sum(case \r\n\t\t   when (\"pricefx_sold\" - \"priceFX\") < 0 \r\n\t\t   then (\"pricefx_sold\" - \"priceFX\") * \"taxableIncomeFX\" / \"priceFX\"\r\n\t\t   when extract(day from \"date_sold\" - \"date\") > 365 \r\n\t\t   then (\"pricefx_sold\" - \"priceFX\") * \"taxableIncomeFX\" / \"priceFX\" * 0.5\r\n\t\t   else (\"pricefx_sold\" - \"priceFX\") * \"taxableIncomeFX\" / \"priceFX\"\r\n\t\t   end) * 1e-18\r\n\t\t   from pls_wallet_history\r\n       where date_sold >= '2023-07-01' and date_sold <= '2024-06-30'",
+          "refId": "B",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Capital Gain / Loss (AUD)",
+      "type": "stat"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 5
+      },
+      "id": 22,
+      "panels": [],
+      "title": "Original Panels From Raskitoma",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "${DS_POSTGRESQL}"
+      },
+      "description": "Sums all withdrawals found in the last hour and calculates USD",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 4,
+          "displayName": "PLS",
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 100
+              },
+              {
+                "color": "green",
+                "value": 1000
+              }
+            ]
+          },
+          "unit": "locale"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "B"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "percentunit"
+              },
+              {
+                "id": "decimals",
+                "value": 2
+              },
+              {
+                "id": "displayName",
+                "value": "APR"
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "red",
+                      "value": null
+                    },
+                    {
+                      "color": "yellow",
+                      "value": 0.05
+                    },
+                    {
+                      "color": "green",
+                      "value": 0.1
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "options": {
+                      "0": {
+                        "color": "super-light-purple",
+                        "index": 0,
+                        "text": "---"
+                      }
+                    },
+                    "type": "value"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "C"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "currencyUSD"
+              },
+              {
+                "id": "displayName",
+                "value": "USD"
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green",
+                      "value": null
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 5,
+        "x": 0,
+        "y": 6
+      },
+      "id": 15,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value_and_name"
+      },
+      "pluginVersion": "9.5.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "${DS_POSTGRESQL}"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\r\n-- all parts changed (commented) occurred on 6/4/24\r\n--SUM(amount*$pls_precision) as value FROM pls_validator_withdrawals\r\nSUM(\"balanceChange\")  * 1e-18 as PLS  FROM pls_wallet_history\r\nWHERE\r\naddress = '$pls_wallet'\r\n--AND index <> 36521405\r\nand \"balanceChange\" >= 0\r\nand cast(\"balanceChange\" * 1e-18 as decimal) % 32e+6 <> 0 -- needed to exclude any amount resulting from exiting a validator\r\nAND\r\n-- \"timeStamp\" BETWEEN (SELECT MAX(\"timeStamp\") - INTERVAL '1 hour' FROM pls_validator_withdrawals) AND (SELECT MAX(\"timeStamp\") FROM pls_validator_withdrawals);\r\n\"date\" BETWEEN (SELECT MAX(\"date\") - INTERVAL '1 hour' FROM pls_wallet_history) AND (SELECT MAX(\"date\") FROM pls_wallet_history);",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "name": "SUM",
+                "parameters": [
+                  {
+                    "name": "amount",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          },
+          "table": "pls_validator_withdrawals"
+        },
+        {
+          "datasource": {
+            "type": "__expr__",
+            "uid": "${DS_EXPRESSION}"
+          },
+          "expression": "$A * $pls_price",
+          "hide": false,
+          "refId": "C",
+          "type": "math"
+        }
+      ],
+      "timeFrom": "1h",
+      "title": "Last Hour",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "${DS_POSTGRESQL}"
+      },
+      "description": "Sums all withdrawals found in the last day and calculates USD",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 4,
+          "displayName": "PLS",
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 100
+              },
+              {
+                "color": "green",
+                "value": 1000
+              }
+            ]
+          },
+          "unit": "locale"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "C"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "currencyUSD"
+              },
+              {
+                "id": "displayName",
+                "value": "USD"
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green",
+                      "value": null
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 5,
+        "x": 5,
+        "y": 6
+      },
+      "id": 8,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value_and_name"
+      },
+      "pluginVersion": "9.5.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "${DS_POSTGRESQL}"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\r\n-- all parts changed (commented) occurred on 6/4/24\r\n--SUM(amount*$pls_precision) as value FROM pls_validator_withdrawals\r\nSUM(\"balanceChange\")  * 1e-18 as PLS  FROM pls_wallet_history\r\nWHERE\r\naddress = '$pls_wallet'\r\n--AND index <> 36521405\r\nand \"balanceChange\" >= 0\r\nand cast(\"balanceChange\" * 1e-18 as decimal) % 32e+6 <> 0 -- needed to exclude any amount resulting from exiting a validator\r\nAND\r\n-- \"timeStamp\" BETWEEN (SELECT MAX(\"timeStamp\") - INTERVAL '1 hour' FROM pls_validator_withdrawals) AND (SELECT MAX(\"timeStamp\") FROM pls_validator_withdrawals);\r\n\"date\" BETWEEN (SELECT MAX(\"date\") - INTERVAL '1 day' FROM pls_wallet_history) AND (SELECT MAX(\"date\") FROM pls_wallet_history);",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "name": "SUM",
+                "parameters": [
+                  {
+                    "name": "amount",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          },
+          "table": "pls_validator_withdrawals"
+        },
+        {
+          "datasource": {
+            "type": "__expr__",
+            "uid": "${DS_EXPRESSION}"
+          },
+          "expression": "$A * $pls_price",
+          "hide": false,
+          "refId": "C",
+          "type": "math"
+        }
+      ],
+      "timeFrom": "1d",
+      "title": "Last day",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "${DS_POSTGRESQL}"
+      },
+      "description": "Sums all withdrawals found in the last week and calculates USD",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 4,
+          "displayName": "PLS",
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 100
+              },
+              {
+                "color": "green",
+                "value": 1000
+              }
+            ]
+          },
+          "unit": "locale"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "C"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "currencyUSD"
+              },
+              {
+                "id": "displayName",
+                "value": "USD"
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green",
+                      "value": null
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 5,
+        "x": 10,
+        "y": 6
+      },
+      "id": 13,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value_and_name"
+      },
+      "pluginVersion": "9.5.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "${DS_POSTGRESQL}"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\r\n-- all parts changed (commented) occurred on 6/4/24\r\n--SUM(amount*$pls_precision) as value FROM pls_validator_withdrawals\r\nSUM(\"balanceChange\")  * 1e-18 as PLS  FROM pls_wallet_history\r\nWHERE\r\naddress = '$pls_wallet'\r\n--AND index <> 36521405\r\nand \"balanceChange\" >= 0\r\nand cast(\"balanceChange\" * 1e-18 as decimal) % 32e+6 <> 0 -- needed to exclude any amount resulting from exiting a validator\r\nAND\r\n-- \"timeStamp\" BETWEEN (SELECT MAX(\"timeStamp\") - INTERVAL '1 hour' FROM pls_validator_withdrawals) AND (SELECT MAX(\"timeStamp\") FROM pls_validator_withdrawals);\r\n\"date\" BETWEEN (SELECT MAX(\"date\") - INTERVAL '7 days' FROM pls_wallet_history) AND (SELECT MAX(\"date\") FROM pls_wallet_history);",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "name": "SUM",
+                "parameters": [
+                  {
+                    "name": "amount",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          },
+          "table": "pls_validator_withdrawals"
+        },
+        {
+          "datasource": {
+            "type": "__expr__",
+            "uid": "${DS_EXPRESSION}"
+          },
+          "expression": "$A * $pls_price",
+          "hide": false,
+          "refId": "C",
+          "type": "math"
+        }
+      ],
+      "timeFrom": "1w",
+      "title": "Last week",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "${DS_POSTGRESQL}"
+      },
+      "description": "Sums all withdrawals found in the last 30 days(month) and calculates USD",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 4,
+          "displayName": "PLS",
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 100
+              },
+              {
+                "color": "green",
+                "value": 1000
+              }
+            ]
+          },
+          "unit": "locale"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "C"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "currencyUSD"
+              },
+              {
+                "id": "displayName",
+                "value": "USD"
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green",
+                      "value": null
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 5,
+        "x": 15,
+        "y": 6
+      },
+      "id": 14,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value_and_name"
+      },
+      "pluginVersion": "9.5.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "${DS_POSTGRESQL}"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\r\n-- all parts changed (commented) occurred on 6/4/24\r\n--SUM(amount*$pls_precision) as value FROM pls_validator_withdrawals\r\nSUM(\"balanceChange\")  * 1e-18 as PLS  FROM pls_wallet_history\r\nWHERE\r\naddress = '$pls_wallet'\r\n--AND index <> 36521405\r\nand \"balanceChange\" >= 0\r\nand cast(\"balanceChange\" * 1e-18 as decimal) % 32e+6 <> 0 -- needed to exclude any amount resulting from exiting a validator\r\nAND\r\n-- \"timeStamp\" BETWEEN (SELECT MAX(\"timeStamp\") - INTERVAL '1 hour' FROM pls_validator_withdrawals) AND (SELECT MAX(\"timeStamp\") FROM pls_validator_withdrawals);\r\n\"date\" BETWEEN (SELECT MAX(\"date\") - INTERVAL '30 days' FROM pls_wallet_history) AND (SELECT MAX(\"date\") FROM pls_wallet_history);",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "name": "SUM",
+                "parameters": [
+                  {
+                    "name": "amount",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          },
+          "table": "pls_validator_withdrawals"
+        },
+        {
+          "datasource": {
+            "type": "__expr__",
+            "uid": "${DS_EXPRESSION}"
+          },
+          "expression": "$A * $pls_price",
+          "hide": false,
+          "refId": "C",
+          "type": "math"
+        }
+      ],
+      "timeFrom": "30d",
+      "title": "Last Month",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "datasource",
+        "uid": "-- Mixed --"
+      },
+      "description": "Get's last block chain from node and shows it's against the last checked block on the scheduler - This is used to know how much our data is up to date.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "A"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Current Height"
+              },
+              {
+                "id": "unit",
+                "value": "locale"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "blockheight"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "locale"
+              },
+              {
+                "id": "displayName",
+                "value": "Last Checked"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "C"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "locale"
+              },
+              {
+                "id": "displayName",
+                "value": "Diff"
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green",
+                      "value": null
+                    },
+                    {
+                      "color": "yellow",
+                      "value": 250
+                    },
+                    {
+                      "color": "orange",
+                      "value": 500
+                    },
+                    {
+                      "color": "red",
+                      "value": 1000
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 5,
+        "x": 0,
+        "y": 10
+      },
+      "id": 16,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "9.5.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "builder",
+          "expr": "chain_head_block",
+          "instant": false,
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "${DS_POSTGRESQL}"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "SELECT blockheight FROM pls_block_explorer ORDER BY date DESC LIMIT 1 ",
+          "refId": "B",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [
+                  {
+                    "name": "blockheight",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 1,
+            "orderBy": {
+              "property": {
+                "name": "date",
+                "type": "string"
+              },
+              "type": "property"
+            },
+            "orderByDirection": "DESC"
+          },
+          "table": "pls_block_explorer"
+        },
+        {
+          "datasource": {
+            "type": "__expr__",
+            "uid": "${DS_EXPRESSION}"
+          },
+          "expression": "$A-$B",
+          "hide": false,
+          "refId": "C",
+          "type": "math"
+        }
+      ],
+      "title": "Current/Checked Height",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "${DS_POSTGRESQL}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "A"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Validator count"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "B"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Days of data"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 2,
+        "x": 5,
+        "y": 10
+      },
+      "id": 12,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "9.5.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "__expr__",
+            "uid": "${DS_EXPRESSION}"
+          },
+          "expression": "$validator_count - 1",
+          "hide": false,
+          "refId": "A",
+          "type": "math"
+        },
+        {
+          "datasource": {
+            "type": "__expr__",
+            "uid": "${DS_EXPRESSION}"
+          },
+          "expression": "$days_of_data",
+          "hide": false,
+          "refId": "B",
+          "type": "math"
+        }
+      ],
+      "title": "Validator Stats",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "${DS_POSTGRESQL}"
+      },
+      "description": "It shows all time data:\nSum of all PLS rewards(total) since starting\nIt's value in current USD price\nCurrent USD price for reference\nAnd APR calculated from the last week. (If there's no a week of data, it will not show this)",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "pls"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "locale"
+              },
+              {
+                "id": "displayName",
+                "value": "PLS Rewards"
+              },
+              {
+                "id": "decimals",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "usd"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "currencyUSD"
+              },
+              {
+                "id": "decimals",
+                "value": 5
+              },
+              {
+                "id": "displayName",
+                "value": "USD"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "priceUSD"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "currencyUSD"
+              },
+              {
+                "id": "displayName",
+                "value": "Current Price"
+              },
+              {
+                "id": "decimals",
+                "value": 10
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "red",
+                      "value": null
+                    },
+                    {
+                      "color": "orange",
+                      "value": 0.00005
+                    },
+                    {
+                      "color": "yellow",
+                      "value": 0.00007
+                    },
+                    {
+                      "color": "green",
+                      "value": 0.0001
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "APR"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "percentunit"
+              },
+              {
+                "id": "decimals",
+                "value": 2
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "red",
+                      "value": null
+                    },
+                    {
+                      "color": "orange",
+                      "value": 0.07
+                    },
+                    {
+                      "color": "yellow",
+                      "value": 0.075
+                    },
+                    {
+                      "color": "green",
+                      "value": 0.1
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "options": {
+                      "0": {
+                        "color": "super-light-purple",
+                        "index": 0,
+                        "text": "No Data"
+                      }
+                    },
+                    "type": "value"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 5,
+        "x": 7,
+        "y": 10
+      },
+      "id": 2,
+      "links": [
+        {
+          "targetBlank": true,
+          "title": "More details in Explorer",
+          "url": "https://scan.pulsechain.com/address/${pls_wallet:queryparam}"
+        }
+      ],
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value_and_name"
+      },
+      "pluginVersion": "9.5.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "${DS_POSTGRESQL}"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "-- original query below as of 6/4/24\r\n-- SELECT SUM(amount)  * $pls_precision as PLS  FROM pls_validator_withdrawals where address = '$pls_wallet'\r\n-- AND index <> 36521405 -- this is the index number of the 32M PLS validator deposit returned when I exited one validator\r\n-- modified query below as of 6/4/24 to make it more accurate as it captures priority fee / tip rewards as well\r\nSELECT SUM(\"balanceChange\")  * 1e-18 as PLS  FROM pls_wallet_history where address = '$pls_wallet'\r\nand \"balanceChange\" >= 0\r\nand cast(\"balanceChange\" * 1e-18 as decimal) % 32e+6 <> 0 -- needed to exclude any amount resulting from exiting a validator",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "name": "SUM",
+                "parameters": [
+                  {
+                    "name": "\"blockReward\"",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          },
+          "table": "pls_mined_blocks"
+        },
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "${DS_POSTGRESQL}"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "-- original query as of 6/4/24\r\n-- SELECT SUM(amount) * $pls_price * $pls_precision as USD FROM pls_validator_withdrawals where address = '$pls_wallet'\r\n-- AND index <> 36521405\r\n-- modified query as of 6/4/24\r\nSELECT SUM(\"balanceChange\") * 1e-18 * $pls_price as USD FROM pls_wallet_history where address = '$pls_wallet'\r\nand \"balanceChange\" >= 0\r\nand cast(\"balanceChange\" * 1e-18 as decimal) % 32e+6 <> 0 -- needed to exclude any amount resulting from exiting a validator",
+          "refId": "B",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        },
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "${DS_POSTGRESQL}"
+          },
+          "editorMode": "builder",
+          "format": "table",
+          "hide": false,
+          "rawSql": "SELECT \"priceUSD\" FROM pls_price ORDER BY date DESC LIMIT 1 ",
+          "refId": "C",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [
+                  {
+                    "name": "\"priceUSD\"",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 1,
+            "orderBy": {
+              "property": {
+                "name": "date",
+                "type": "string"
+              },
+              "type": "property"
+            },
+            "orderByDirection": "DESC"
+          },
+          "table": "pls_price"
+        },
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "${DS_POSTGRESQL}"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "SELECT ((SUM(\"balanceChange\") * 1e-18) * 52.142 / (cast(1 as bigint) * ($validator_count - 1) * $validator_deposit) * $enough_data) as \"APR\"\r\nFROM pls_wallet_history \r\nWHERE \r\naddress = '$pls_wallet'\r\nAND \"balanceChange\" >= 0\r\n-- id <> 1273 and id <> 2146 and id <> 2168 and id <> 2803 and id <> 3679 and id <> 4377 and id <> 5289 and id <> 6655 and id <> 6719\r\n-- and id <> 7148\r\nand\r\n\"date\" BETWEEN (SELECT MAX(\"date\") - INTERVAL '7 days' FROM pls_wallet_history) AND (SELECT MAX(\"date\") FROM pls_wallet_history);",
+          "refId": "D",
+          "sql": {
+            "columns": [
+              {
+                "name": "SUM",
+                "parameters": [
+                  {
+                    "name": "amount",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50,
+            "whereJsonTree": {
+              "children1": [
+                {
+                  "id": "aa89aaa9-0123-4456-b89a-b188e3c6eef7",
+                  "properties": {
+                    "field": "\"timeStamp\"",
+                    "operator": "between",
+                    "value": [
+                      null,
+                      null
+                    ],
+                    "valueSrc": [
+                      "value",
+                      null
+                    ],
+                    "valueType": [
+                      "datetime",
+                      null
+                    ]
+                  },
+                  "type": "rule"
+                },
+                {
+                  "id": "a8abaa8b-cdef-4012-b456-7188e3c7835a",
+                  "properties": {
+                    "field": "address",
+                    "operator": "equal",
+                    "value": [
+                      "$pls_wallet"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                }
+              ],
+              "id": "a9bba9a9-89ab-4cde-b012-3188e3993bb1",
+              "type": "group"
+            },
+            "whereString": "address = '$pls_wallet'"
+          },
+          "table": "pls_validator_withdrawals"
+        }
+      ],
+      "title": "All Time",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "${DS_POSTGRESQL}"
+      },
+      "description": "Address balance in PLS doesn't include ERC20, ERC721, ERC1155 tokens).",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "pls"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "locale"
+              },
+              {
+                "id": "decimals",
+                "value": 4
+              },
+              {
+                "id": "displayName",
+                "value": "PLS"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "usd"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "currencyUSD"
+              },
+              {
+                "id": "decimals",
+                "value": 5
+              },
+              {
+                "id": "displayName",
+                "value": "USD"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 3,
+        "x": 12,
+        "y": 10
+      },
+      "id": 4,
+      "links": [
+        {
+          "targetBlank": true,
+          "title": "View details in Explorer",
+          "url": "https://scan.pulsechain.com/address/${pls_wallet:queryparam}/coin-balances#address-tabs"
+        }
+      ],
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "9.5.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "${DS_POSTGRESQL}"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT balance * 1E-18 as PLS FROM pls_wallets where address = '$pls_wallet'",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [
+                  {
+                    "name": "balance",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          },
+          "table": "pls_wallets"
+        },
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "${DS_POSTGRESQL}"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "SELECT balance * 1E-18 * $pls_price as USD FROM pls_wallets where address = '$pls_wallet'",
+          "refId": "B",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Wallet Balance",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "${DS_POSTGRESQL}"
+      },
+      "description": "Address balance in PLS doesn't include ERC20, ERC721, ERC1155 tokens).",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "decimals": 4,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 16000000
+              }
+            ]
+          },
+          "unit": "locale"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "value"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "locale"
+              },
+              {
+                "id": "decimals",
+                "value": 4
+              },
+              {
+                "id": "displayName",
+                "value": "PLS"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 5,
+        "x": 15,
+        "y": 10
+      },
+      "id": 5,
+      "interval": "1h",
+      "options": {
+        "legend": {
+          "calcs": [
+            "min",
+            "mean",
+            "max"
+          ],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "${DS_POSTGRESQL}"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT date at time zone '$my_timezone' as timeStamp, balance * 1E-18 as value FROM pls_wallet_history where address = '$pls_wallet' order by timeStamp asc",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [
+                  {
+                    "name": "date",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "balance",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          },
+          "table": "pls_wallet_history"
+        }
+      ],
+      "timeFrom": "24h",
+      "title": "Wallet Balance History",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "${DS_POSTGRESQL}"
+      },
+      "description": "This shows a bar graph to see the performance of withdrawals for the last 24hours per hour.\n\nSince withdrawals could be made at any time, some times(hours) could be skipped.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "fillOpacity": 80,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "pls"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "none"
+              },
+              {
+                "id": "decimals",
+                "value": 2
+              },
+              {
+                "id": "displayName",
+                "value": "PLS"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "usd"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "currencyUSD"
+              },
+              {
+                "id": "decimals",
+                "value": 2
+              },
+              {
+                "id": "displayName",
+                "value": "USD"
+              },
+              {
+                "id": "custom.axisPlacement",
+                "value": "right"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 7,
+        "x": 0,
+        "y": 17
+      },
+      "id": 1,
+      "options": {
+        "barRadius": 0,
+        "barWidth": 0.97,
+        "fullHighlight": false,
+        "groupWidth": 0.7,
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "orientation": "auto",
+        "showValue": "auto",
+        "stacking": "none",
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        },
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 0
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "${DS_POSTGRESQL}"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\r\n-- 6/4/24: commented code changed and replaced with code uncommented\r\n-- $__timeGroupAlias(\"timeStamp\" at time zone '$my_timezone', '1h'),\r\n$__timeGroupAlias(\"date\" at time zone '$my_timezone', '1h'), \r\n-- sum(amount * $pls_precision) as PLS\r\nsum(\"balanceChange\" * 1e-18) as PLS\r\nFROM pls_wallet_history\r\nWHERE address = '$pls_wallet'\r\nAND\r\n\"balanceChange\" >= 0\r\nand cast(\"balanceChange\" * 1e-18 as decimal) % 32e+6 <> 0 -- needed to exclude any amount resulting from exiting a validator\r\nand\r\n--index <> 36521405\r\n-- $__timeFilter(\"timeStamp\" at time zone '$my_timezone')\r\n$__timeFilter(\"date\" at time zone '$my_timezone') \r\ngroup by 1\r\norder by 1",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [
+                  {
+                    "name": "\"timeStamp\"",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "\"blockReward\"",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [],
+            "limit": 50,
+            "whereJsonTree": {
+              "children1": [
+                {
+                  "id": "89b8aa9a-89ab-4cde-b012-3188da0ff0ac",
+                  "properties": {
+                    "field": "address",
+                    "operator": "equal",
+                    "value": [
+                      "$pls_wallet"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                }
+              ],
+              "id": "b89a9bb9-89ab-4cde-b012-3188da07d29f",
+              "type": "group"
+            },
+            "whereString": "address = '$pls_wallet'"
+          },
+          "table": "pls_mined_blocks"
+        },
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "${DS_POSTGRESQL}"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "SELECT\r\n-- 6/4/24: commented code changed and replaced with code uncommented\r\n-- $__timeGroupAlias(\"timeStamp\" at time zone '$my_timezone', '1h'),\r\n$__timeGroupAlias(\"date\" at time zone '$my_timezone', '1h'), \r\n-- sum(amount * $pls_precision) as PLS\r\nsum(\"balanceChange\" * 1e-18 * $pls_price) as USD\r\nFROM pls_wallet_history\r\nWHERE address = '$pls_wallet'\r\nAND\r\n\"balanceChange\" >= 0\r\nand cast(\"balanceChange\" * 1e-18 as decimal) % 32e+6 <> 0 -- needed to exclude any amount resulting from exiting a validator\r\nand\r\n--index <> 36521405\r\n-- $__timeFilter(\"timeStamp\" at time zone '$my_timezone')\r\n$__timeFilter(\"date\" at time zone '$my_timezone') \r\ngroup by 1\r\norder by 1",
+          "refId": "B",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "timeFrom": "1d",
+      "title": "Validator Rewards",
+      "type": "barchart"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "${DS_POSTGRESQL}"
+      },
+      "description": "This shows a bar graph to see the performance of withdrawals for the last week per day.\n",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "fillOpacity": 80,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "pls"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "none"
+              },
+              {
+                "id": "decimals",
+                "value": 2
+              },
+              {
+                "id": "displayName",
+                "value": "PLS"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "usd"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "currencyUSD"
+              },
+              {
+                "id": "decimals",
+                "value": 2
+              },
+              {
+                "id": "displayName",
+                "value": "USD"
+              },
+              {
+                "id": "custom.axisPlacement",
+                "value": "right"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 7,
+        "x": 7,
+        "y": 17
+      },
+      "id": 17,
+      "options": {
+        "barRadius": 0,
+        "barWidth": 0.97,
+        "fullHighlight": false,
+        "groupWidth": 0.7,
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "orientation": "auto",
+        "showValue": "auto",
+        "stacking": "none",
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        },
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 0
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "${DS_POSTGRESQL}"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\r\n-- 6/4/24: commented code changed and replaced with code uncommented\r\n-- $__timeGroupAlias(\"timeStamp\" at time zone '$my_timezone', '1h'),\r\n$__timeGroupAlias(\"date\" at time zone '$my_timezone', '1d'), \r\n-- sum(amount * $pls_precision) as PLS\r\nsum(\"balanceChange\" * 1e-18) as PLS\r\nFROM pls_wallet_history\r\nWHERE address = '$pls_wallet'\r\nAND\r\n\"balanceChange\" >= 0\r\nand cast(\"balanceChange\" * 1e-18 as decimal) % 32e+6 <> 0 -- needed to exclude any amount resulting from exiting a validator\r\nand\r\n--index <> 36521405\r\n-- $__timeFilter(\"timeStamp\" at time zone '$my_timezone')\r\n$__timeFilter(\"date\" at time zone '$my_timezone') \r\ngroup by 1\r\norder by 1",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [
+                  {
+                    "name": "\"timeStamp\"",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "\"blockReward\"",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [],
+            "limit": 50,
+            "whereJsonTree": {
+              "children1": [
+                {
+                  "id": "89b8aa9a-89ab-4cde-b012-3188da0ff0ac",
+                  "properties": {
+                    "field": "address",
+                    "operator": "equal",
+                    "value": [
+                      "$pls_wallet"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                }
+              ],
+              "id": "b89a9bb9-89ab-4cde-b012-3188da07d29f",
+              "type": "group"
+            },
+            "whereString": "address = '$pls_wallet'"
+          },
+          "table": "pls_mined_blocks"
+        },
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "${DS_POSTGRESQL}"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "SELECT\r\n-- 6/4/24: commented code changed and replaced with code uncommented\r\n-- $__timeGroupAlias(\"timeStamp\" at time zone '$my_timezone', '1h'),\r\n$__timeGroupAlias(\"date\" at time zone '$my_timezone', '1d'), \r\n-- sum(amount * $pls_precision) as PLS\r\nsum(\"balanceChange\" * 1e-18 * $pls_price) as USD\r\nFROM pls_wallet_history\r\nWHERE address = '$pls_wallet'\r\nAND\r\n\"balanceChange\" >= 0\r\nand cast(\"balanceChange\" * 1e-18 as decimal) % 32e+6 <> 0 -- needed to exclude any amount resulting from exiting a validator\r\nand\r\n--index <> 36521405\r\n-- $__timeFilter(\"timeStamp\" at time zone '$my_timezone')\r\n$__timeFilter(\"date\" at time zone '$my_timezone') \r\ngroup by 1\r\norder by 1",
+          "refId": "B",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "timeFrom": "1w",
+      "title": "Validator Rewards",
+      "type": "barchart"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "${DS_POSTGRESQL}"
+      },
+      "description": "This shows a bar graph to see the performance of withdrawals for the last month(30 days) per week.\n",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "fillOpacity": 80,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "pls"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "none"
+              },
+              {
+                "id": "decimals",
+                "value": 2
+              },
+              {
+                "id": "displayName",
+                "value": "PLS"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "usd"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "currencyUSD"
+              },
+              {
+                "id": "decimals",
+                "value": 2
+              },
+              {
+                "id": "displayName",
+                "value": "USD"
+              },
+              {
+                "id": "custom.axisPlacement",
+                "value": "right"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 14,
+        "y": 17
+      },
+      "id": 18,
+      "options": {
+        "barRadius": 0,
+        "barWidth": 0.97,
+        "fullHighlight": false,
+        "groupWidth": 0.7,
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "orientation": "auto",
+        "showValue": "auto",
+        "stacking": "none",
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        },
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 0
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "${DS_POSTGRESQL}"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\r\n-- 6/4/24: commented code changed and replaced with code uncommented\r\n-- $__timeGroupAlias(\"timeStamp\" at time zone '$my_timezone', '1h'),\r\n$__timeGroupAlias(\"date\" at time zone '$my_timezone', '1w'), \r\n-- sum(amount * $pls_precision) as PLS\r\nsum(\"balanceChange\" * 1e-18) as PLS\r\nFROM pls_wallet_history\r\nWHERE address = '$pls_wallet'\r\nAND\r\n\"balanceChange\" >= 0\r\nand cast(\"balanceChange\" * 1e-18 as decimal) % 32e+6 <> 0 -- needed to exclude any amount resulting from exiting a validator\r\nand\r\n--index <> 36521405\r\n-- $__timeFilter(\"timeStamp\" at time zone '$my_timezone')\r\n$__timeFilter(\"date\" at time zone '$my_timezone') \r\ngroup by 1\r\norder by 1",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [
+                  {
+                    "name": "\"timeStamp\"",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "\"blockReward\"",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [],
+            "limit": 50,
+            "whereJsonTree": {
+              "children1": [
+                {
+                  "id": "89b8aa9a-89ab-4cde-b012-3188da0ff0ac",
+                  "properties": {
+                    "field": "address",
+                    "operator": "equal",
+                    "value": [
+                      "$pls_wallet"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                }
+              ],
+              "id": "b89a9bb9-89ab-4cde-b012-3188da07d29f",
+              "type": "group"
+            },
+            "whereString": "address = '$pls_wallet'"
+          },
+          "table": "pls_mined_blocks"
+        },
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "${DS_POSTGRESQL}"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "SELECT\r\n-- 6/4/24: commented code changed and replaced with code uncommented\r\n-- $__timeGroupAlias(\"timeStamp\" at time zone '$my_timezone', '1h'),\r\n$__timeGroupAlias(\"date\" at time zone '$my_timezone', '1w'), \r\n-- sum(amount * $pls_precision) as PLS\r\nsum(\"balanceChange\" * 1e-18 * $pls_price) as USD\r\nFROM pls_wallet_history\r\nWHERE address = '$pls_wallet'\r\nAND\r\n\"balanceChange\" >= 0\r\nand cast(\"balanceChange\" * 1e-18 as decimal) % 32e+6 <> 0 -- needed to exclude any amount resulting from exiting a validator\r\nand\r\n--index <> 36521405\r\n-- $__timeFilter(\"timeStamp\" at time zone '$my_timezone')\r\n$__timeFilter(\"date\" at time zone '$my_timezone') \r\ngroup by 1\r\norder by 1",
+          "refId": "B",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "timeFrom": "30d",
+      "title": "Validator Rewards",
+      "type": "barchart"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "${DS_POSTGRESQL}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "filterable": true,
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "pls"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "locale"
+              },
+              {
+                "id": "decimals",
+                "value": 4
+              },
+              {
+                "id": "displayName",
+                "value": "PLS"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "usd"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "currencyUSD"
+              },
+              {
+                "id": "decimals",
+                "value": 4
+              },
+              {
+                "id": "displayName",
+                "value": "USD"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "blockNumber"
+            },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "targetBlank": true,
+                    "title": "View block data",
+                    "url": "https://scan.pulsechain.com/block/${__data.fields.blockNumber}/transactions"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "validatorIndex"
+            },
+            "properties": [
+              {
+                "id": "custom.filterable",
+                "value": true
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "validatorIndex"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Validator"
+              },
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "targetBlank": true,
+                    "title": "Validator info on Beacon Explorer",
+                    "url": "https://beacon.pulsechain.com/validator/${__data.fields.validatorIndex}"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 15,
+        "w": 20,
+        "x": 0,
+        "y": 25
+      },
+      "id": 3,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "enablePagination": true,
+          "fields": [
+            "pls",
+            "usd"
+          ],
+          "reducer": [
+            "sum"
+          ],
+          "show": true
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "9.5.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "${DS_POSTGRESQL}"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT \r\n\"validatorIndex\", \r\nsum(amount * $pls_precision) as PLS, \r\nsum(amount * $pls_precision * $pls_price) as USD\r\nFROM pls_validator_withdrawals WHERE address = '$pls_wallet'\r\nand index <> 36521405\r\ngroup by 1\r\norder by 1 asc",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [
+                  {
+                    "name": "\"timeStamp\"",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "\"blockReward\"",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [],
+            "limit": 50,
+            "whereJsonTree": {
+              "children1": [
+                {
+                  "id": "89b8aa9a-89ab-4cde-b012-3188da0ff0ac",
+                  "properties": {
+                    "field": "address",
+                    "operator": "equal",
+                    "value": [
+                      "$pls_wallet"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                }
+              ],
+              "id": "b89a9bb9-89ab-4cde-b012-3188da07d29f",
+              "type": "group"
+            },
+            "whereString": "address = '$pls_wallet'"
+          },
+          "table": "pls_mined_blocks"
+        }
+      ],
+      "title": "Validator PLS generation",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "${DS_POSTGRESQL}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "pls"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "none"
+              },
+              {
+                "id": "decimals",
+                "value": 9
+              },
+              {
+                "id": "displayName",
+                "value": "PLS"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "usd"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "currencyUSD"
+              },
+              {
+                "id": "decimals",
+                "value": 4
+              },
+              {
+                "id": "displayName",
+                "value": "USD"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "blockNumber"
+            },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "targetBlank": true,
+                    "title": "View block data",
+                    "url": "https://scan.pulsechain.com/block/${__data.fields.blockNumber}/transactions"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "validatorIndex"
+            },
+            "properties": [
+              {
+                "id": "custom.filterable",
+                "value": true
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 53,
+        "w": 20,
+        "x": 0,
+        "y": 40
+      },
+      "id": 11,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "enablePagination": true,
+          "fields": [
+            "pls",
+            "usd"
+          ],
+          "reducer": [
+            "sum"
+          ],
+          "show": true
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "9.5.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "${DS_POSTGRESQL}"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT \r\n\"timeStamp\" at time zone '$my_timezone' as timeStamp, \r\n\"index\",\r\n\"blockNumber\", \r\n\"validatorIndex\",\r\namount * $pls_precision as PLS, \r\namount * $pls_precision * $pls_price as USD,\r\n\"priceUSD\" as \"$ at W\"\r\n\r\nFROM pls_validator_withdrawals WHERE address = '$pls_wallet'\r\nand index <> 36521405\r\norder by 2 desc",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [
+                  {
+                    "name": "\"timeStamp\"",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "\"blockReward\"",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [],
+            "limit": 50,
+            "whereJsonTree": {
+              "children1": [
+                {
+                  "id": "89b8aa9a-89ab-4cde-b012-3188da0ff0ac",
+                  "properties": {
+                    "field": "address",
+                    "operator": "equal",
+                    "value": [
+                      "$pls_wallet"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                }
+              ],
+              "id": "b89a9bb9-89ab-4cde-b012-3188da07d29f",
+              "type": "group"
+            },
+            "whereString": "address = '$pls_wallet'"
+          },
+          "table": "pls_mined_blocks"
+        }
+      ],
+      "timeFrom": "1y",
+      "title": "Withdrawals",
+      "type": "table"
+    }
+  ],
+  "refresh": "5m",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "current": {},
+        "datasource": {
+          "type": "postgres",
+          "uid": "${DS_POSTGRESQL}"
+        },
+        "definition": "select owner as __text , address as __value from pls_wallets",
+        "hide": 1,
+        "includeAll": false,
+        "label": "Wallet Owner",
+        "multi": false,
+        "name": "pls_wallet",
+        "options": [],
+        "query": "select owner as __text , address as __value from pls_wallets",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "postgres",
+          "uid": "${DS_POSTGRESQL}"
+        },
+        "definition": "select \"priceUSD\" from pls_price order by \"date\" desc limit(1)\n\n\n",
+        "hide": 2,
+        "includeAll": false,
+        "label": "pls_price",
+        "multi": false,
+        "name": "pls_price",
+        "options": [],
+        "query": "select \"priceUSD\" from pls_price order by \"date\" desc limit(1)\n\n\n",
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "description": "Precision point for PLS",
+        "hide": 2,
+        "name": "pls_precision",
+        "query": "${VAR_PLS_PRECISION}",
+        "skipUrlSync": false,
+        "type": "constant",
+        "current": {
+          "value": "${VAR_PLS_PRECISION}",
+          "text": "${VAR_PLS_PRECISION}",
+          "selected": false
+        },
+        "options": [
+          {
+            "value": "${VAR_PLS_PRECISION}",
+            "text": "${VAR_PLS_PRECISION}",
+            "selected": false
+          }
+        ]
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "postgres",
+          "uid": "${DS_POSTGRESQL}"
+        },
+        "definition": "select\ndistinct \"validatorIndex\"\nfrom \npls_validator_withdrawals\nwhere\n\"address\" = '${pls_wallet}'",
+        "hide": 2,
+        "includeAll": false,
+        "multi": false,
+        "name": "validator_list",
+        "options": [],
+        "query": "select\ndistinct \"validatorIndex\"\nfrom \npls_validator_withdrawals\nwhere\n\"address\" = '${pls_wallet}'",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 3,
+        "type": "query"
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "postgres",
+          "uid": "${DS_POSTGRESQL}"
+        },
+        "definition": "select\ncount(distinct \"validatorIndex\")\nfrom \npls_validator_withdrawals\nwhere\n\"address\" = '${pls_wallet}'",
+        "hide": 2,
+        "includeAll": false,
+        "multi": false,
+        "name": "validator_count",
+        "options": [],
+        "query": "select\ncount(distinct \"validatorIndex\")\nfrom \npls_validator_withdrawals\nwhere\n\"address\" = '${pls_wallet}'",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "32000000",
+          "value": "32000000"
+        },
+        "description": "",
+        "hide": 2,
+        "includeAll": false,
+        "multi": false,
+        "name": "validator_deposit",
+        "options": [
+          {
+            "selected": true,
+            "text": "32000000",
+            "value": "32000000"
+          }
+        ],
+        "query": "32000000",
+        "skipUrlSync": false,
+        "type": "custom"
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "postgres",
+          "uid": "${DS_POSTGRESQL}"
+        },
+        "definition": "select\nextract(\nday  from\n(Max(\"timeStamp\") - Min(\"timeStamp\")))::integer\nfrom \npls_validator_withdrawals\nwhere\n\"address\" = '${pls_wallet}'",
+        "hide": 2,
+        "includeAll": false,
+        "multi": false,
+        "name": "days_of_data",
+        "options": [],
+        "query": "select\nextract(\nday  from\n(Max(\"timeStamp\") - Min(\"timeStamp\")))::integer\nfrom \npls_validator_withdrawals\nwhere\n\"address\" = '${pls_wallet}'",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "postgres",
+          "uid": "${DS_POSTGRESQL}"
+        },
+        "definition": "select\n((extract(\nday  from\n(Max(\"timeStamp\") - Min(\"timeStamp\")))::integer)>7) ::integer\nfrom \npls_validator_withdrawals\nwhere\n\"address\" = '${pls_wallet}'",
+        "description": "",
+        "hide": 2,
+        "includeAll": false,
+        "multi": false,
+        "name": "enough_data",
+        "options": [],
+        "query": "select\n((extract(\nday  from\n(Max(\"timeStamp\") - Min(\"timeStamp\")))::integer)>7) ::integer\nfrom \npls_validator_withdrawals\nwhere\n\"address\" = '${pls_wallet}'",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "hide": 2,
+        "name": "my_timezone",
+        "query": "${VAR_MY_TIMEZONE}",
+        "skipUrlSync": false,
+        "type": "constant",
+        "current": {
+          "value": "${VAR_MY_TIMEZONE}",
+          "text": "${VAR_MY_TIMEZONE}",
+          "selected": false
+        },
+        "options": [
+          {
+            "value": "${VAR_MY_TIMEZONE}",
+            "text": "${VAR_MY_TIMEZONE}",
+            "selected": false
+          }
+        ]
+      }
+    ]
+  },
+  "time": {
+    "from": "now-2d",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "Validator Stats",
+  "uid": "f3efa864-3cb3-4d61-a76d-1a515bf4b43e",
+  "version": 46,
+  "weekStart": ""
+}
