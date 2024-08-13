@@ -397,8 +397,11 @@ class pls_wallet_history(db.Model):
     priceFX = db.Column('priceFX', db.Float, nullable = True)
     taxableIncomeUSD = db.Column('taxableIncomeUSD', db.Float, nullable = True)
     taxableIncomeFX = db.Column('taxableIncomeFX', db.Float, nullable = True)
+    balanceChange = db.Column('balanceChange', db.Float, nullable = True)
+    date_sold = db.Column('date_sold', db.DateTime, nullable = True)
+    pricefx_sold = db.Column('pricefx_sold', db.Float, nullable = True)
     
-    def __init__(self, address, balance, date, price_usd, price_fx, taxableIncome_usd, taxableIncome_fx):
+    def __init__(self, address, balance, date, price_usd, price_fx, taxableIncome_usd, taxableIncome_fx, balanceChange, date_sold, pricefx_sold):
         self.address = address
         self.balance = balance
         self.date = date
@@ -406,16 +409,20 @@ class pls_wallet_history(db.Model):
         self.priceFX = price_fx
         self.taxableIncomeUSD = taxableIncome_usd
         self.taxableIncomeFX = taxableIncome_fx        
+        self.balanceChange = balanceChange
+        self.date_sold = date_sold
+        self.pricefx_sold = pricefx_sold
     
     def __repr__(self):
-        return f'{self.address} - {self.balance} - {self.date} - {self.priceUSD} - {self.priceFX} - {self.taxableIncomeUSD} - {self.taxableIncomeFX}'
+        return f'{self.address} - {self.balance} - {self.date} - {self.priceUSD} - {self.priceFX} - {self.taxableIncomeUSD} - {self.taxableIncomeFX} - \
+                {self.balanceChange} - {self.date_sold} - self{pricefx_sold}'
     
     @staticmethod
     def get_all():
         return pls_wallet_history.query.all()
     
     @staticmethod
-    def new_balance(address, balance, price_usd, price_fx, taxableIncome_usd, taxableIncome_fx):
+    def new_balance(address, balance, price_usd, price_fx, taxableIncome_usd, taxableIncome_fx, balance_change):
         my_balance = pls_wallet_history(
             address = address,
             balance = balance,
@@ -423,7 +430,8 @@ class pls_wallet_history(db.Model):
             price_usd=price_usd,
             price_fx=price_fx,
             taxableIncome_usd=taxableIncome_usd,
-            taxableIncome_fx=taxableIncome_fx
+            taxableIncome_fx=taxableIncome_fx,
+            balance_change = balance_change
         )
         db.session.add(my_balance)
         db.session.commit()
