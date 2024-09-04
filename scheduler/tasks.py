@@ -112,44 +112,53 @@ def wallets_review():
     pls_wallets_list = pls_wallets.query.all()
     price_usd, price_fx = get_price(PLS_PRICE_URI, PLS_PRICE_API_KEY, PLS_PRICE_FX)
     pls_price.store_new_price(price_usd, price_fx)
+    web3 = Web3(Web3.HTTPProvider(app.config['WEB3_PROVIDER_URI']))
     print("hello there wallets review def")
     for wallet in pls_wallets_list:
-        wallet_data_uri = f'https://api.scan.pulsechain.com/api?module=account&action=balance&address={wallet.address}'
-        wallet_data = requests.get(wallet_data_uri, headers=headers)
-        if wallet_data.status_code == 200:
-            wallet_info = wallet_data.json()
-            if wallet_info['status'] == '1':
-                # save new value for history purposes
-                current_balance = wallet_info['result']
-                previous_balance = pls_wallets.get_balance(wallet.address)
-                balance_change = float(current_balance) - previous_balance
-                if float(current_balance) != previous_balance:
-                    if float(current_balance) > previous_balance:
-                        if (balance_change) < 32e+24:
-                            #increase in balance from validator rewards and/or fee recipient tips/rewards
-                            taxableIncome_USD = balance_change * price_usd
-                            taxableIncome_FX = balance_change * price_fx
-                        else:
-                            #increase in balance caused by exiting validator/s with or without validator
-                            #rewards and/or fee recipient tips/rewards
-                            taxableIncome_USD = (balance_change % 32e+24) * price_usd
-                            taxableIncome_FX = (balance_change % 32e+24) * price_fx
+        # 4/9/24: had to obtain balance by another means (ie use web3 methods directly interacting with an rpc node)
+        # as the scan.pulsechain.com api below stopped providing up to date balance information and went "stale".
+        # Therefore, I have commented out the 3 lines below and some of the checks on the json that would ordinarily
+        # have returned with updated information.
+        #wallet_data_uri = f'https://api.scan.pulsechain.com/api?module=account&action=balance&address={wallet.address}'
+        #wallet_data = requests.get(wallet_data_uri, headers=headers)
+        #if wallet_data.status_code == 200:
+        if web3.is_connected():
+        #wallet_info = wallet_data.json()
+        #if wallet_info['status'] == '1': # note required as accessing balance via web3 methods and not scan.pulsechain.com api.
+            # save new value for history purposes
+            #current_balance = wallet_info['result']
+            balance_wei = web3.eth.get_balance(wallet.address)
+            current_balance = balance_wei
+            previous_balance = pls_wallets.get_balance(wallet.address)
+            balance_change = float(current_balance) - previous_balance
+            if float(current_balance) != previous_balance:
+                if float(current_balance) > previous_balance:
+                    if (balance_change) < 32e+24:
+                        #increase in balance from validator rewards and/or fee recipient tips/rewards
+                        taxableIncome_USD = balance_change * price_usd
+                        taxableIncome_FX = balance_change * price_fx
                     else:
-                        taxableIncome_USD = 0
-                        taxableIncome_FX = 0
-                    pls_wallet_history.new_balance(wallet.address, current_balance, price_usd, price_fx, taxableIncome_USD, taxableIncome_FX, balance_change)
-                    # update wallet balance
-                    pls_wallets.update_balance(wallet.address, current_balance)
-                    log2store = f'Wallet {wallet.address} updated with balance {current_balance}'
-                    prGreen(f'{get_time()} | {log2store}')
+                        #increase in balance caused by exiting validator/s with or without validator
+                        #rewards and/or fee recipient tips/rewards
+                        taxableIncome_USD = (balance_change % 32e+24) * price_usd
+                        taxableIncome_FX = (balance_change % 32e+24) * price_fx
                 else:
-                    log2store = f'Wallet {wallet.address} not updated, balance is the same'
-                    prYellow(f'{get_time()} | {log2store}')
+                    taxableIncome_USD = 0
+                    taxableIncome_FX = 0
+                pls_wallet_history.new_balance(wallet.address, current_balance, price_usd, price_fx, taxableIncome_USD, taxableIncome_FX, balance_change)
+                # update wallet balance
+                pls_wallets.update_balance(wallet.address, current_balance)
+                log2store = f'Wallet {wallet.address} updated with balance {current_balance}'
+                prGreen(f'{get_time()} | {log2store}')
             else:
-                log2store = f'Wallet {wallet.address} not found'
-                prRed(f'{get_time()} | {log2store}')
+                log2store = f'Wallet {wallet.address} not updated, balance is the same'
+                prYellow(f'{get_time()} | {log2store}')
+        #else:
+            #    log2store = f'Wallet {wallet.address} not found'
+            #    prRed(f'{get_time()} | {log2store}')
         else:
-            log2store = f'Wallet {wallet.address} not found'
+            #log2store = f'Wallet {wallet.address} not found'
+            log2store = f'Web3 not connected'
             prRed(f'{get_time()} | {log2store}')
     log2store = 'Wallets Update - End'
     print(f'{get_time()} | {log2store}')
